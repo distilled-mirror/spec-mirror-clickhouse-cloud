@@ -5,7 +5,7 @@
     "version": "1.0",
     "contact": {
       "name": "ClickHouse Support",
-      "url": "https://clickhouse.com/docs/en/cloud/manage/openapi?referrer=openapi-1422730",
+      "url": "https://clickhouse.com/docs/en/cloud/manage/openapi?referrer=openapi-1418320",
       "email": "support@clickhouse.com"
     }
   },
@@ -16365,7 +16365,7 @@
       },
       "get": {
         "summary": "List of organization Postgres services",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns a list of all Postgres services in the organization.",
+        "description": "Returns a list of all Postgres services in the organization.",
         "operationId": "postgresServiceGetList",
         "parameters": [
           {
@@ -16470,19 +16470,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/prometheus": {
       "get": {
         "summary": "Get organization PostgreSQL metrics",
-        "description": "**Disclaimer:** This beta endpoint is evolving; the API contract may change. <br /><br /> Returns Prometheus metrics for all PostgreSQL services in an organization. Maximum 100 services supported.",
+        "description": "Returns Prometheus metrics for all PostgreSQL services in an organization. Maximum 100 services supported.",
         "operationId": "postgresOrgPrometheusGet",
         "parameters": [
           {
@@ -16569,19 +16563,13 @@
         ],
         "tags": [
           "Prometheus"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}": {
       "get": {
         "summary": "Get PostgreSQL service details",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns a Postgres service that belongs to the organization",
+        "description": "Returns a Postgres service that belongs to the organization",
         "operationId": "postgresServiceGet",
         "parameters": [
           {
@@ -16693,17 +16681,11 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       },
       "delete": {
         "summary": "Delete a PostgreSQL service",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Deletes a Postgres service that belongs to the organization. Returns 409 if deletion protection is enabled for the service.",
+        "description": "Deletes a Postgres service that belongs to the organization. Returns 409 if deletion protection is enabled for the service.",
         "operationId": "postgresServiceDelete",
         "parameters": [
           {
@@ -16812,17 +16794,11 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       },
       "patch": {
         "summary": "Update a PostgreSQL service",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Update a Postgres service that belongs to the organization. **WARNING:** Changing the name also updates the host name and certificates for the service.",
+        "description": "Update a Postgres service that belongs to the organization. **WARNING:** Changing the name also updates the host name and certificates for the service.",
         "operationId": "postgresServicePatch",
         "parameters": [
           {
@@ -16943,19 +16919,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/caCertificates": {
       "get": {
         "summary": "Get Postgres CA certs",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Download CA certificates for a PostgreSQL service",
+        "description": "Download CA certificates for a PostgreSQL service",
         "operationId": "postgresServiceCertsGet",
         "parameters": [
           {
@@ -17060,19 +17030,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/restoredService": {
       "post": {
         "summary": "Restore a Postgres service",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Restore a Postgres database from continuous backup, optionally at a specific point in time.",
+        "description": "Restore a Postgres database from continuous backup, optionally at a specific point in time.",
         "operationId": "postgresInstanceRestore",
         "parameters": [
           {
@@ -17194,19 +17158,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/password": {
       "patch": {
         "summary": "Update Postgres superuser password",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Sets a new password for a Postgres service's superuser account.",
+        "description": "Sets a new password for a Postgres service's superuser account.",
         "operationId": "postgresServiceSetPassword",
         "parameters": [
           {
@@ -17327,19 +17285,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/state": {
       "patch": {
         "summary": "Update Postgres service state",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Initiate a process for a Postgres service:\n* restart: Initiates a service restart\n* promote: Promotes a read replica to primary\n* switchover: Switch a primary over to a standby. If there is no standby, replace the primary with a newly provisioned server and switch over to it.\n",
+        "description": "Initiate a process for a Postgres service:\n* restart: Initiates a service restart\n* promote: Promotes a read replica to primary\n* switchover: Switch a primary over to a standby. If there is no standby, replace the primary with a newly provisioned server and switch over to it.\n",
         "operationId": "postgresServicePatchState",
         "parameters": [
           {
@@ -17460,19 +17412,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/readReplica": {
       "post": {
         "summary": "Create a read replica for a Postgres service",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Initiate the process to create a new read replica for a Postgres service.",
+        "description": "Initiate the process to create a new read replica for a Postgres service.",
         "operationId": "postgresInstanceCreateReadReplica",
         "parameters": [
           {
@@ -17594,19 +17540,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/config": {
       "get": {
         "summary": "Get PostgreSQL service configuration",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns the configuration data for a Postgres service and its PgBouncer service.",
+        "description": "Returns the configuration data for a Postgres service and its PgBouncer service.",
         "operationId": "postgresInstanceConfigGet",
         "parameters": [
           {
@@ -17718,17 +17658,11 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       },
       "post": {
         "summary": "Replace Postgres service configuration",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Replace the existing Postgres service and pgBouncer configuration.",
+        "description": "Replace the existing Postgres service and pgBouncer configuration.",
         "operationId": "postgresInstanceConfigPost",
         "parameters": [
           {
@@ -17849,17 +17783,11 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       },
       "patch": {
         "summary": "Update Postgres service configuration",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Update the existing Postgres service and pgBouncer configuration.",
+        "description": "Update the existing Postgres service and pgBouncer configuration.",
         "operationId": "postgresInstanceConfigPatch",
         "parameters": [
           {
@@ -17980,19 +17908,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/prometheus": {
       "get": {
         "summary": "Get PostgreSQL service metrics",
-        "description": "**Disclaimer:** This beta endpoint is evolving; the API contract may change. <br /><br /> Returns Prometheus metrics for a PostgreSQL service.",
+        "description": "Returns Prometheus metrics for a PostgreSQL service.",
         "operationId": "postgresInstancePrometheusGet",
         "parameters": [
           {
@@ -18089,19 +18011,13 @@
         ],
         "tags": [
           "Prometheus"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/metrics": {
       "get": {
         "summary": "Get Postgres time-series metrics",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns bucketed time-series metrics for a PostgreSQL service over the requested window (CPU, memory, disk, network, connections, cache hit ratio, throughput, transactions, wait events, lock waits, and more). Use this to chart or analyze how a service behaved over time.",
+        "description": "Returns bucketed time-series metrics for a PostgreSQL service over the requested window (CPU, memory, disk, network, connections, cache hit ratio, throughput, transactions, wait events, lock waits, and more). Use this to chart or analyze how a service behaved over time.",
         "operationId": "postgresInstanceMetricsGet",
         "parameters": [
           {
@@ -18242,19 +18158,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/backups": {
       "get": {
         "summary": "List of Postgres service backups",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns a list of the base backups retained for a Postgres service, ordered by last modified date, newest first. Results are capped at `limit` (default and maximum 100) per page. Every response carries `limit`, `totalCount` and `nextCursor`; pass `nextCursor` as the `cursor` query parameter to fetch the next page, repeating until it is null. A Postgres service is recovered to a point in time rather than to a single backup, so restore it with the restore endpoint and a timestamp between the service's `earliestRestoreTime` and now, rather than with a backup key from this list.",
+        "description": "Returns a list of the base backups retained for a Postgres service, ordered by last modified date, newest first. Results are capped at `limit` (default and maximum 100) per page. Every response carries `limit`, `totalCount` and `nextCursor`; pass `nextCursor` as the `cursor` query parameter to fetch the next page, repeating until it is null. A Postgres service is recovered to a point in time rather than to a single backup, so restore it with the restore endpoint and a timestamp between the service's `earliestRestoreTime` and now, rather than with a backup key from this list.",
         "operationId": "postgresServiceBackupGetList",
         "parameters": [
           {
@@ -18406,19 +18316,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/slowQueryPatterns": {
       "get": {
         "summary": "List Postgres slow query patterns",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns aggregate metrics for the slowest query patterns observed on a Postgres service during the given time window. Use this to discover which queries dominate total execution time, CPU, I/O, or WAL generation.",
+        "description": "Returns aggregate metrics for the slowest query patterns observed on a Postgres service during the given time window. Use this to discover which queries dominate total execution time, CPU, I/O, or WAL generation.",
         "operationId": "slowQueryPatternsGetList",
         "parameters": [
           {
@@ -18643,19 +18547,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/slowQueryPatterns/{queryId}": {
       "get": {
         "summary": "Get a Postgres slow query pattern with recent executions",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns aggregate metrics for a single slow query pattern together with its most recent individual executions.",
+        "description": "Returns aggregate metrics for a single slow query pattern together with its most recent individual executions.",
         "operationId": "slowQueryPatternGet",
         "parameters": [
           {
@@ -18820,19 +18718,13 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/logs": {
       "get": {
         "summary": "List Postgres server logs",
-        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns PostgreSQL server log entries for a Postgres service within the given time window, most recent first by default (override with `sort_order`). Results are paginated with `limit`/`offset`; advance `offset` until a page returns fewer than `limit` entries to read the full window. The time range must not exceed 30 days, and `to_date` must be after `from_date`.",
+        "description": "Returns PostgreSQL server log entries for a Postgres service within the given time window, most recent first by default (override with `sort_order`). Results are paginated with `limit`/`offset`; advance `offset` until a page returns fewer than `limit` entries to read the full window. The time range must not exceed 30 days, and `to_date` must be after `from_date`.",
         "operationId": "postgresLogsGetList",
         "parameters": [
           {
@@ -19027,12 +18919,6 @@
         ],
         "tags": [
           "Postgres"
-        ],
-        "x-badges": [
-          {
-            "name": "Beta",
-            "position": "after"
-          }
         ]
       }
     },
@@ -23745,7 +23631,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -23913,7 +23799,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:view"
+              "control-plane:organization:view-udfs"
             ]
           }
         ],
@@ -24133,7 +24019,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -24409,7 +24295,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -24648,7 +24534,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:view"
+              "control-plane:organization:view-udfs"
             ]
           }
         ],
@@ -24860,7 +24746,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:view"
+              "control-plane:organization:view-udfs"
             ]
           }
         ],
@@ -25126,7 +25012,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -25377,7 +25263,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:view"
+              "control-plane:organization:view-udfs"
             ]
           }
         ],
@@ -25599,7 +25485,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -25938,7 +25824,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:view"
+              "control-plane:organization:view-udfs"
             ]
           }
         ],
@@ -26202,7 +26088,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -26522,7 +26408,7 @@
         "security": [
           {
             "basicAuth": [
-              "control-plane:organization:manage"
+              "control-plane:organization:manage-udfs"
             ]
           }
         ],
@@ -43450,6 +43336,7 @@
         "type": "string",
         "title": "Postgres major version",
         "enum": [
+          "19",
           "18",
           "17"
         ]
