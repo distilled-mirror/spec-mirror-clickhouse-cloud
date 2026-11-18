@@ -5,7 +5,7 @@
     "version": "1.0",
     "contact": {
       "name": "ClickHouse Support",
-      "url": "https://clickhouse.com/docs/en/cloud/manage/openapi?referrer=openapi-1418320",
+      "url": "https://clickhouse.com/docs/en/cloud/manage/openapi?referrer=openapi-1445979",
       "email": "support@clickhouse.com"
     }
   },
@@ -710,7 +710,7 @@
     "/v1/organizations/{organizationId}/roles": {
       "get": {
         "summary": "List all available roles for an organization",
-        "description": "Returns all available roles (system + custom) for an organization.",
+        "description": "Returns available roles (system + custom) for an organization, ordered by unique role ID ascending. Results are capped at `limit` (default and maximum 250) per page. Pass `nextCursor` as the `cursor` query parameter to fetch the next page until it is null.",
         "operationId": "organizationRolesGetList",
         "parameters": [
           {
@@ -721,6 +721,24 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Maximum number of results to return.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 250
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "description": "Opaque cursor from a previous response's `nextCursor`, marking where to resume the list.",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -747,6 +765,17 @@
                       "items": {
                         "$ref": "#/components/schemas/RBACRole"
                       }
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "description": "Maximum number of results returned in this page."
+                    },
+                    "nextCursor": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Cursor for the next page, to be sent as the `cursor` query parameter. Null on the last page."
                     }
                   }
                 }
@@ -18161,6 +18190,511 @@
         ]
       }
     },
+    "/v1/organizations/{organizationId}/postgres/{postgresId}/privateEndpoint": {
+      "get": {
+        "summary": "Get the PostgreSQL private endpoint",
+        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Returns the AWS private endpoint service of a Postgres service, or 404 if it has not been created. Private endpoints are available only for AWS Postgres services, and only for organizations with the feature enabled.",
+        "operationId": "postgresPrivateEndpointGet",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "description": "ID of the organization that owns the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "postgresId",
+            "description": "ID of the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 200
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/PostgresPrivateEndpoint"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request cannot be processed due to a client error. Please verify your request parameters and try again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 400
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error has occurred. If this issue persists, please contact ClickHouse Cloud support for assistance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code.",
+                      "example": 500
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": [
+              "control-plane:postgres-service:view"
+            ]
+          }
+        ],
+        "tags": [
+          "Postgres"
+        ],
+        "x-badges": [
+          {
+            "name": "Beta",
+            "position": "after"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create the PostgreSQL private endpoint",
+        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Creates the AWS private endpoint service of a Postgres service. Creation takes about 5 to 10 minutes: `state` is `creating` until the service is `available`. A VPC endpoint can connect only after its ID is approved with the update endpoint. Private endpoints are available only for AWS Postgres services, and only for organizations with the feature enabled.",
+        "operationId": "postgresPrivateEndpointPost",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "description": "ID of the organization that owns the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "postgresId",
+            "description": "ID of the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostgresPrivateEndpointPostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 200
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/PostgresPrivateEndpoint"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request cannot be processed due to a client error. Please verify your request parameters and try again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 400
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error has occurred. If this issue persists, please contact ClickHouse Cloud support for assistance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code.",
+                      "example": 500
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": [
+              "control-plane:postgres-service:manage"
+            ]
+          }
+        ],
+        "tags": [
+          "Postgres"
+        ],
+        "x-badges": [
+          {
+            "name": "Beta",
+            "position": "after"
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update the PostgreSQL private endpoint",
+        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Approves VPC endpoints by ID and sets the supported regions. At least one of `allowedVpcEndpoints` and `supportedRegions` is required, and each one provided replaces the existing list in full, so include every entry to keep. Private endpoints are available only for AWS Postgres services, and only for organizations with the feature enabled.",
+        "operationId": "postgresPrivateEndpointPatch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "description": "ID of the organization that owns the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "postgresId",
+            "description": "ID of the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostgresPrivateEndpointPatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 200
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    },
+                    "result": {
+                      "$ref": "#/components/schemas/PostgresPrivateEndpoint"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request cannot be processed due to a client error. Please verify your request parameters and try again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 400
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error has occurred. If this issue persists, please contact ClickHouse Cloud support for assistance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code.",
+                      "example": 500
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": [
+              "control-plane:postgres-service:manage"
+            ]
+          }
+        ],
+        "tags": [
+          "Postgres"
+        ],
+        "x-badges": [
+          {
+            "name": "Beta",
+            "position": "after"
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete the PostgreSQL private endpoint",
+        "description": "**This endpoint is in beta.** API contract is stable, and no breaking changes are expected in the future. <br /><br /> Deletes the AWS private endpoint service of a Postgres service. Connections through approved VPC endpoints stop working. Private endpoints are available only for AWS Postgres services, and only for organizations with the feature enabled.",
+        "operationId": "postgresPrivateEndpointDelete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organizationId",
+            "description": "ID of the organization that owns the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "postgresId",
+            "description": "ID of the Postgres service.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 200
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request cannot be processed due to a client error. Please verify your request parameters and try again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number",
+                      "description": "HTTP status code.",
+                      "example": 400
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal server error has occurred. If this issue persists, please contact ClickHouse Cloud support for assistance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code.",
+                      "example": 500
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Detailed error description."
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "description": "Unique id assigned to every request. UUIDv4",
+                      "format": "uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": [
+              "control-plane:postgres-service:manage"
+            ]
+          }
+        ],
+        "tags": [
+          "Postgres"
+        ],
+        "x-badges": [
+          {
+            "name": "Beta",
+            "position": "after"
+          }
+        ]
+      }
+    },
     "/v1/organizations/{organizationId}/postgres/{postgresId}/backups": {
       "get": {
         "summary": "List of Postgres service backups",
@@ -29922,6 +30456,11 @@
             "description": "Enable hard delete behavior in ReplacingMergeTree for PostgreSQL DELETE operations.",
             "type": "boolean",
             "example": false
+          },
+          "useJsonNativeFormat": {
+            "description": "Store json and jsonb columns in native ClickHouse JSON format (requires ClickHouse 25.3+). Non-object values are wrapped as {\"_value\": ...}, and json[]/jsonb[] become Array(JSON). When disabled, JSON data is stored as String. Can only be set at creation. Must be enabled for your organization.",
+            "type": "boolean",
+            "example": false
           }
         }
       },
@@ -30395,6 +30934,11 @@
           },
           "deleteOnMerge": {
             "description": "Enable hard delete behavior in ReplacingMergeTree for MySQL DELETE operations.",
+            "type": "boolean",
+            "example": false
+          },
+          "useJsonNativeFormat": {
+            "description": "Store JSON columns in native ClickHouse JSON format (requires ClickHouse 25.3+). Non-object values are wrapped as {\"_value\": ...}. When disabled, JSON data is stored as String. Can only be set at creation. Must be enabled for your organization.",
             "type": "boolean",
             "example": false
           }
@@ -32665,7 +33209,7 @@
             "format": "date-time"
           },
           "type": {
-            "description": "Type of the activity. One of 'create_organization', 'delete_organization', 'organization_update_name', 'transfer_service_in', 'transfer_service_out', 'save_payment_method', 'marketplace_subscription', 'migrate_marketplace_billing_details_in', 'migrate_marketplace_billing_details_out', 'organization_update_tier', 'organization_invite_create', 'organization_invite_delete', 'organization_member_join', 'organization_member_add', 'organization_member_leave', 'organization_member_delete', 'organization_member_update_role', 'organization_member_update_roles', 'organization_member_update_mfa_method', 'organization_saml_connection_create', 'organization_saml_connection_update', 'user_login', 'user_login_failed', 'user_logout', 'key_create', 'key_delete', 'openapi_key_update', 'service_create', 'service_start', 'service_stop', 'service_awaken', 'service_idle', 'service_running', 'service_partially_running', 'service_delete', 'service_update_name', 'service_update_ip_access_list', 'service_update_autoscaling_memory', 'service_update_autoscaling_idling', 'service_update_password', 'service_update_autoscaling_replicas', 'service_update_max_allowable_replicas', 'service_update_backup_configuration', 'service_restore_backup', 'service_update_release_channel', 'service_update_gpt_usage_consent', 'service_update_private_endpoints', 'service_import_to_organization', 'service_export_from_organization', 'service_maintenance_start', 'service_maintenance_end', 'service_update_core_dump', 'service_update_deletion_protection', 'service_update_autoscaling_schedule', 'service_update_query_endpoints', 'service_update_direct_connection', 'service_update_sql_console_jwt_auth', 'service_update_snapshot_configuration', 'service_update_collector_ip_access_list', 'service_update_mysql_interface', 'service_update_upgrade_window', 'service_delete_upgrade_window', 'service_trigger_failover', 'service_trigger_recovery', 'service_mcp_enabled', 'service_mcp_disabled', 'service_upgrade', 'service_scaled_down_for_tier_change', 'service_encryption_key_check_failed', 'service_encryption_key_rotation_failed', 'service_encryption_key_rotated', 'service_stop_encryption_key_inaccessible', 'service_restart_encryption_key_rotation', 'backup_delete', 'backup_bucket_create', 'backup_bucket_update', 'backup_bucket_delete', 'backup_bucket_archive', 'warehouse_update_name', 'warehouse_update_release_channel', 'role_create', 'role_update', 'role_delete', 'role_resources_delete', 'organization_member_remove_roles', 'scim_user_profile_update', 'scim_group_create', 'scim_group_update', 'scim_group_delete', 'organization_saml_connection_delete', 'organization_update_saml_query_ownership_migration', 'organization_approved_domain_verify', 'organization_approved_domain_update', 'organization_approved_domain_delete', 'organization_approved_domain_auto_join', 'organization_approved_domain_auto_invite', 'datadog_integration_create', 'datadog_integration_delete', 'organization_update_spend_alert', 'organization_update_core_dumps', 'organization_update_private_endpoints', 'organization_update_pci_compliance', 'organization_update_hipaa_status', 'organization_security_contact_add', 'organization_security_contact_remove', 'organization_security_contact_replace', 'organization_update_public_preview', 'byoc_infrastructure_update_customer_authorized_access', 'transfer_credits_in', 'transfer_credits_out', 'promo_code_claim', 'schema_advisor_seed', 'schema_advisor_generate_plan', 'schema_advisor_approve_plan', 'schema_advisor_start_deployment', 'schema_advisor_start_benchmark', 'schema_advisor_run_benchmark', 'schema_advisor_start_promotion', 'schema_advisor_exchange_tables', 'schema_advisor_drop_sandbox', 'udf_create', 'udf_update', 'udf_delete', 'udf_version_create', 'udf_version_delete', 'udf_attach', 'udf_detach', 'udf_update_services', 'udf_redeploy', 'udf_rebuild', 'postgres_action'. New values may be added; treat unknown values as valid.",
+            "description": "Type of the activity. One of 'create_organization', 'delete_organization', 'organization_update_name', 'transfer_service_in', 'transfer_service_out', 'save_payment_method', 'marketplace_subscription', 'migrate_marketplace_billing_details_in', 'migrate_marketplace_billing_details_out', 'organization_update_tier', 'organization_invite_create', 'organization_invite_delete', 'organization_member_join', 'organization_member_add', 'organization_member_leave', 'organization_member_delete', 'organization_member_update_role', 'organization_member_update_roles', 'organization_member_update_mfa_method', 'organization_saml_connection_create', 'organization_saml_connection_update', 'user_login', 'user_login_failed', 'user_logout', 'key_create', 'key_delete', 'openapi_key_update', 'service_create', 'service_start', 'service_stop', 'service_awaken', 'service_idle', 'service_running', 'service_partially_running', 'service_delete', 'service_update_name', 'service_update_ip_access_list', 'service_update_autoscaling_memory', 'service_update_autoscaling_idling', 'service_update_password', 'service_update_autoscaling_replicas', 'service_update_max_allowable_replicas', 'service_update_backup_configuration', 'service_restore_backup', 'service_update_release_channel', 'service_update_gpt_usage_consent', 'service_update_private_endpoints', 'service_import_to_organization', 'service_export_from_organization', 'service_maintenance_start', 'service_maintenance_end', 'service_update_core_dump', 'service_update_deletion_protection', 'service_update_autoscaling_schedule', 'service_update_query_endpoints', 'service_update_direct_connection', 'service_update_sql_console_jwt_auth', 'service_update_snapshot_configuration', 'service_update_collector_ip_access_list', 'service_update_mysql_interface', 'service_update_upgrade_window', 'service_delete_upgrade_window', 'service_trigger_failover', 'service_trigger_recovery', 'service_mcp_enabled', 'service_mcp_disabled', 'service_upgrade', 'service_scaled_down_for_tier_change', 'service_encryption_key_check_failed', 'service_encryption_key_rotation_failed', 'service_encryption_key_rotated', 'service_stop_encryption_key_inaccessible', 'service_restart_encryption_key_rotation', 'backup_delete', 'backup_bucket_create', 'backup_bucket_update', 'backup_bucket_delete', 'backup_bucket_archive', 'warehouse_update_name', 'warehouse_update_release_channel', 'role_create', 'role_update', 'role_delete', 'role_resources_delete', 'organization_member_remove_roles', 'scim_user_profile_update', 'scim_group_create', 'scim_group_update', 'scim_group_delete', 'organization_saml_connection_delete', 'organization_update_saml_query_ownership_migration', 'organization_approved_domain_verify', 'organization_approved_domain_update', 'organization_approved_domain_delete', 'organization_approved_domain_auto_join', 'organization_approved_domain_auto_invite', 'datadog_integration_create', 'datadog_integration_delete', 'organization_update_spend_alert', 'organization_update_core_dumps', 'organization_update_ai_support', 'organization_update_ai_data_sharing', 'organization_update_private_endpoints', 'organization_update_pci_compliance', 'organization_update_hipaa_status', 'organization_security_contact_add', 'organization_security_contact_remove', 'organization_security_contact_replace', 'organization_update_public_preview', 'byoc_infrastructure_update_customer_authorized_access', 'transfer_credits_in', 'transfer_credits_out', 'promo_code_claim', 'schema_advisor_seed', 'schema_advisor_generate_plan', 'schema_advisor_approve_plan', 'schema_advisor_start_deployment', 'schema_advisor_start_benchmark', 'schema_advisor_run_benchmark', 'schema_advisor_start_promotion', 'schema_advisor_exchange_tables', 'schema_advisor_drop_sandbox', 'udf_create', 'udf_update', 'udf_delete', 'udf_version_create', 'udf_version_delete', 'udf_attach', 'udf_detach', 'udf_update_services', 'udf_redeploy', 'udf_rebuild', 'postgres_action'. New values may be added; treat unknown values as valid.",
             "type": "string",
             "example": "service_create"
           },
@@ -42550,7 +43094,7 @@
           },
           "io_method": {
             "type": "string",
-            "description": "Selects the method used to perform asynchronous I/O.",
+            "description": "Selects the method used to perform asynchronous I/O. Postgres 18 and later.",
             "externalDocs": {
               "url": "https://postgresqlco.nf/doc/en/param/io_method/"
             },
@@ -42566,11 +43110,37 @@
               "string",
               "integer"
             ],
-            "description": "Number of I/O worker processes used when io_method is worker.",
+            "description": "Number of I/O worker processes used when io_method is worker. Postgres 18 only.",
             "externalDocs": {
               "url": "https://postgresqlco.nf/doc/en/param/io_workers/"
             },
             "example": 3,
+            "minimum": 1,
+            "maximum": 32
+          },
+          "io_min_workers": {
+            "type": [
+              "string",
+              "integer"
+            ],
+            "description": "Minimum number of I/O worker processes kept running when io_method is worker. Postgres 19 and later.",
+            "externalDocs": {
+              "url": "https://postgresqlco.nf/doc/en/param/io_min_workers/"
+            },
+            "example": 2,
+            "minimum": 1,
+            "maximum": 32
+          },
+          "io_max_workers": {
+            "type": [
+              "string",
+              "integer"
+            ],
+            "description": "Maximum number of I/O worker processes started when io_method is worker. Postgres 19 and later.",
+            "externalDocs": {
+              "url": "https://postgresqlco.nf/doc/en/param/io_max_workers/"
+            },
+            "example": 8,
             "minimum": 1,
             "maximum": 32
           },
@@ -42825,6 +43395,19 @@
             "minimum": 0,
             "maximum": 262143
           },
+          "max_repack_replication_slots": {
+            "type": [
+              "string",
+              "integer"
+            ],
+            "description": "Replication slots reserved for REPACK CONCURRENTLY, separate from max_replication_slots. Postgres 19 and later.",
+            "externalDocs": {
+              "url": "https://postgresqlco.nf/doc/en/param/max_repack_replication_slots/"
+            },
+            "example": 5,
+            "minimum": 0,
+            "maximum": 262143
+          },
           "max_sync_workers_per_subscription": {
             "type": [
               "string",
@@ -42861,6 +43444,19 @@
             },
             "example": 8,
             "minimum": 1
+          },
+          "autovacuum_max_parallel_workers": {
+            "type": [
+              "string",
+              "integer"
+            ],
+            "description": "Maximum number of parallel workers a single autovacuum worker can use. 0 (the default) turns parallel autovacuum off. Postgres 19 and later.",
+            "externalDocs": {
+              "url": "https://postgresqlco.nf/doc/en/param/autovacuum_max_parallel_workers/"
+            },
+            "example": 2,
+            "minimum": 0,
+            "maximum": 1024
           },
           "autovacuum_naptime": {
             "type": [
@@ -43739,6 +44335,160 @@
           "pgConfig",
           "pgBouncerConfig"
         ]
+      },
+      "PostgresPrivateEndpointVpcEndpoint": {
+        "properties": {
+          "vpcEndpointId": {
+            "description": "ID of the AWS VPC endpoint that is allowed to connect.",
+            "type": "string",
+            "example": "vpce-0123456789abcdef0",
+            "pattern": "^vpce-[0-9a-f]{17}$"
+          },
+          "description": {
+            "description": "Optional description of the VPC endpoint.",
+            "type": "string",
+            "example": "Production VPC",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "vpcEndpointId"
+        ]
+      },
+      "PostgresPrivateEndpointPort": {
+        "properties": {
+          "port": {
+            "description": "Port exposed by the endpoint service.",
+            "type": "integer",
+            "example": 5432
+          },
+          "targetPort": {
+            "description": "Port on the Postgres service it forwards to.",
+            "type": "integer",
+            "example": 5432
+          }
+        },
+        "required": [
+          "port",
+          "targetPort"
+        ]
+      },
+      "PostgresPrivateEndpoint": {
+        "properties": {
+          "id": {
+            "description": "ID of the private endpoint service.",
+            "type": "string",
+            "example": "ps0123456789abcdefghjkmnpq"
+          },
+          "state": {
+            "description": "State of the private endpoint service: one of 'creating', 'available', 'deleting'. More states may be added. It is `creating` for about 5 to 10 minutes after creation, then `available`.",
+            "type": "string",
+            "example": "available"
+          },
+          "endpointServiceName": {
+            "description": "Name of the AWS endpoint service. Use it as the service name when creating a VPC endpoint. Omitted until the service is created.",
+            "type": "string",
+            "example": "com.amazonaws.vpce.us-east-1.vpce-svc-0123456789abcdef0"
+          },
+          "endpointServiceId": {
+            "description": "ID of the AWS endpoint service. Omitted until the service is created.",
+            "type": "string",
+            "example": "vpce-svc-0123456789abcdef0"
+          },
+          "privateHostname": {
+            "description": "Hostname that resolves to the Postgres service from an approved VPC endpoint. Omitted until the service is available.",
+            "type": "string"
+          },
+          "privateDnsName": {
+            "description": "Private DNS name of the endpoint service. Omitted until it is assigned.",
+            "type": "string"
+          },
+          "privateDnsVerificationState": {
+            "description": "Verification state of the private DNS name. Omitted until it is assigned.",
+            "type": "string"
+          },
+          "ipAddressType": {
+            "description": "IP address type of the endpoint service.",
+            "type": "string",
+            "example": "dual"
+          },
+          "ports": {
+            "type": "array",
+            "description": "Ports the endpoint service forwards.",
+            "items": {
+              "$ref": "#/components/schemas/PostgresPrivateEndpointPort"
+            }
+          },
+          "supportedRegions": {
+            "type": "array",
+            "description": "AWS region IDs, other than the service region, from which VPC endpoints can connect, such as `us-west-2`. Requires cross-region private endpoints to be enabled for the organization.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "us-west-2"
+            ]
+          },
+          "allowedVpcEndpoints": {
+            "type": "array",
+            "description": "VPC endpoints approved to connect.",
+            "items": {
+              "$ref": "#/components/schemas/PostgresPrivateEndpointVpcEndpoint"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "state",
+          "ipAddressType",
+          "ports",
+          "supportedRegions",
+          "allowedVpcEndpoints"
+        ]
+      },
+      "PostgresPrivateEndpointPostRequest": {
+        "properties": {
+          "supportedRegions": {
+            "type": "array",
+            "description": "AWS region IDs, other than the service region, from which VPC endpoints can connect, such as `us-west-2`. Requires cross-region private endpoints to be enabled for the organization.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "us-west-2"
+            ],
+            "uniqueItems": true
+          }
+        }
+      },
+      "PostgresPrivateEndpointPatchRequest": {
+        "properties": {
+          "allowedVpcEndpoints": {
+            "type": "array",
+            "description": "Full replacement of the approved VPC endpoints: endpoints not listed are no longer allowed to connect. Each endpoint ID must be unique.",
+            "items": {
+              "$ref": "#/components/schemas/PostgresPrivateEndpointVpcEndpoint"
+            },
+            "example": [
+              {
+                "vpcEndpointId": "vpce-0123456789abcdef0",
+                "description": "Production VPC"
+              }
+            ],
+            "maxItems": 50
+          },
+          "supportedRegions": {
+            "type": "array",
+            "description": "Full replacement of the supported regions. AWS region IDs, other than the service region, from which VPC endpoints can connect, such as `us-west-2`. Requires cross-region private endpoints to be enabled for the organization.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "us-west-2"
+            ],
+            "uniqueItems": true
+          }
+        }
       },
       "PostgresBackup": {
         "properties": {
